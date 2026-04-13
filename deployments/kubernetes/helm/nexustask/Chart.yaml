@@ -1,0 +1,5 @@
+apiVersion: v2
+name: nexustask
+description: A Helm chart for NexusTask Enterprise
+version: 1.0.0
+appVersion: "10.4.2"
