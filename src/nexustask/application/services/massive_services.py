@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from typing import List, Dict, Any, Optional
-from .massive_models import *
+from ...infrastructure.database.massive_models import *
 
 logger = logging.getLogger(__name__)
 
