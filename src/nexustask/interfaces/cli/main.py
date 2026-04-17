@@ -18,11 +18,18 @@ def cli():
 @click.option('--project', default='00000000-0000-0000-0000-000000000000', help='Project UUID')
 def create(title, project):
     """Create a new task in the enterprise grid."""
-    with console.status("[bold green]Dispatching command to Kafka broker...") as status:
-        import time
-        time.sleep(1) # Simulate network call
-        import uuid
-        console.print(f"[green]✓[/green] Task created with ID: [bold]{uuid.uuid4()}[/bold]")
+    import httpx
+    with console.status("[bold green]Dispatching command to API gateway...") as status:
+        try:
+            response = httpx.post(
+                "http://localhost:8000/api/v1/tasks",
+                json={"title": title, "project_id": project}
+            )
+            response.raise_for_status()
+            task_id = response.json()["task_id"]
+            console.print(f"[green]✓[/green] Task created with ID: [bold]{task_id}[/bold]")
+        except Exception as e:
+            console.print(f"[red]✗[/red] Failed to create task: {e}")
 
 @cli.command()
 def list():
