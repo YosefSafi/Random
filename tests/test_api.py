@@ -13,7 +13,6 @@ def test_health_check():
     assert response.status_code == 200
     assert response.json() == {"status": "healthy", "version": "10.4.2"}
 
-@pytest.mark.asyncio
 def test_create_task():
     with TestClient(app) as client:
         payload = {
