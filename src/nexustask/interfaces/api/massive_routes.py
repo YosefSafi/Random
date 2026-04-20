@@ -10,29 +10,32 @@ class Entity1CreateRequest(BaseModel):
     tenant_id: str
     data: Dict[str, Any]
 
+from ...application.services.massive_services import EnterpriseEntity1Service, EnterpriseEntity2Service, EnterpriseEntity3Service, EnterpriseEntity4Service, EnterpriseEntity5Service, EnterpriseEntity6Service, EnterpriseEntity7Service, EnterpriseEntity8Service, EnterpriseEntity9Service, EnterpriseEntity10Service
+from ...infrastructure.di import get_enterprise_service
+
 @router.post('/api/v1/entities/1', status_code=201)
-async def create_entity_1(request: Entity1CreateRequest):
+async def create_entity_1(request: Entity1CreateRequest, service: EnterpriseEntity1Service = Depends(lambda: get_enterprise_service(EnterpriseEntity1Service))):
     logger.info(f'API request to create Entity1 for tenant {request.tenant_id}')
-    return {'status': 'created', 'entity_type': 'EnterpriseEntity1', 'tenant_id': request.tenant_id}
+    entity = await service.create_entity(request.tenant_id, request.data)
+    return {'status': 'created', 'id': entity.id}
 
 @router.get('/api/v1/entities/1/{entity_id}')
-async def get_entity_1(entity_id: str, tenant_id: str):
+async def get_entity_1(entity_id: str, tenant_id: str, service: EnterpriseEntity1Service = Depends(lambda: get_enterprise_service(EnterpriseEntity1Service))):
     logger.info(f'API request to get Entity1 {entity_id} for tenant {tenant_id}')
-    return {'id': entity_id, 'tenant_id': tenant_id, 'status': 'active'}
-
-class Entity2CreateRequest(BaseModel):
-    tenant_id: str
-    data: Dict[str, Any]
+    entity = await service.get_entity(entity_id, tenant_id)
+    if not entity: raise HTTPException(404, "Not found")
+    return entity.to_dict()
 
 @router.post('/api/v1/entities/2', status_code=201)
-async def create_entity_2(request: Entity2CreateRequest):
-    logger.info(f'API request to create Entity2 for tenant {request.tenant_id}')
-    return {'status': 'created', 'entity_type': 'EnterpriseEntity2', 'tenant_id': request.tenant_id}
+async def create_entity_2(request: Entity2CreateRequest, service: EnterpriseEntity2Service = Depends(lambda: get_enterprise_service(EnterpriseEntity2Service))):
+    entity = await service.create_entity(request.tenant_id, request.data)
+    return {'status': 'created', 'id': entity.id}
 
 @router.get('/api/v1/entities/2/{entity_id}')
-async def get_entity_2(entity_id: str, tenant_id: str):
-    logger.info(f'API request to get Entity2 {entity_id} for tenant {tenant_id}')
-    return {'id': entity_id, 'tenant_id': tenant_id, 'status': 'active'}
+async def get_entity_2(entity_id: str, tenant_id: str, service: EnterpriseEntity2Service = Depends(lambda: get_enterprise_service(EnterpriseEntity2Service))):
+    entity = await service.get_entity(entity_id, tenant_id)
+    if not entity: raise HTTPException(404, "Not found")
+    return entity.to_dict()
 
 class Entity3CreateRequest(BaseModel):
     tenant_id: str

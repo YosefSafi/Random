@@ -70,3 +70,22 @@ class PostgresTaskRepository(ITaskRepository):
                 tasks.append(task)
             
             return tasks
+
+class GenericPostgresRepository:
+    def __init__(self, session_factory):
+        self.session_factory = session_factory
+
+    async def save(self, entity) -> None:
+        async with self.session_factory() as session:
+            async with session.begin():
+                session.add(entity)
+
+    async def get(self, model_cls, entity_id: str, tenant_id: str):
+        async with self.session_factory() as session:
+            result = await session.execute(
+                select(model_cls).where(
+                    model_cls.id == entity_id,
+                    model_cls.tenant_id == tenant_id
+                )
+            )
+            return result.scalar_one_or_none()

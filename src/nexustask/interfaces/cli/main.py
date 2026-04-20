@@ -33,16 +33,25 @@ def create(title, project):
 
 @cli.command()
 def list():
-    """List tasks using ElasticSearch aggregation."""
-    table = Table(title="NexusTask Global View")
-    table.add_column("ID", justify="right", style="cyan", no_wrap=True)
-    table.add_column("Title", style="magenta")
-    table.add_column("Status", justify="right", style="green")
+    """List tasks using the API gateway."""
+    import httpx
+    with console.status("[bold green]Fetching tasks from API gateway...") as status:
+        try:
+            response = httpx.get("http://localhost:8000/api/v1/tasks")
+            response.raise_for_status()
+            tasks = response.json()
+            
+            table = Table(title="NexusTask Global View")
+            table.add_column("ID", justify="right", style="cyan", no_wrap=True)
+            table.add_column("Title", style="magenta")
+            table.add_column("Status", justify="right", style="green")
 
-    table.add_row("10492-A", "Migrate legacy DB to Spanner", "IN_PROGRESS")
-    table.add_row("10493-B", "Update Kubernetes manifests", "TODO")
+            for task in tasks:
+                table.add_row(task["id"][:8], task["title"], task["status"])
 
-    console.print(table)
+            console.print(table)
+        except Exception as e:
+            console.print(f"[red]✗[/red] Failed to fetch tasks: {e}")
 
 if __name__ == '__main__':
     cli()

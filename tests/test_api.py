@@ -3,6 +3,9 @@ from fastapi.testclient import TestClient
 from nexustask.interfaces.api.main import app
 import uuid
 
+from nexustask.config import settings
+settings.TESTING = True
+
 client = TestClient(app)
 
 def test_health_check():
